@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DevFreela.API.Controllers
 {
-    [Route("api/projects")]
+    [Route("api/[controller]")]
+    [ApiController]
     public class ProjectsController : ControllerBase
     {
         // api/projects?query=net core GET
@@ -56,6 +57,39 @@ namespace DevFreela.API.Controllers
             // Buscar; se não existir, retorna NotFound
 
             // Remover
+
+            return NoContent();
+        }
+
+        // api/projects/1/comments POST
+        [HttpPost("{id}/comments")]
+        public IActionResult PostComment(int id, [FromBody] CreateCommentModel createComment)
+        {
+            // Buscar; se não existir, retorna NotFound
+
+            // Adicionar comentário
+
+            return NoContent();
+        }
+
+        // api/projects/1/start PUT
+        [HttpPut("{id}/start")]
+        public IActionResult Start(int id)
+        {
+            // Buscar; se não existir, retorna NotFound
+
+            // Iniciar projeto
+
+            return NoContent();
+        }
+
+        // api/projects/1/finish PUT
+        [HttpPut("{id}/finish")]
+        public IActionResult Finish(int id)
+        {
+            // Buscar; se não existir, retorna NotFound
+
+            // Finalizar projeto
 
             return NoContent();
         }
