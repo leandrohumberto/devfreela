@@ -1,5 +1,6 @@
 ﻿using DevFreela.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace DevFreela.API.Controllers
 {
@@ -7,6 +8,14 @@ namespace DevFreela.API.Controllers
     [ApiController]
     public class ProjectsController : ControllerBase
     {
+        private readonly OpeningTimeOption _option;
+
+        public ProjectsController(IOptions<OpeningTimeOption> option, ExampleClass exampleClass)
+        {
+            exampleClass.Name = $"Updated at {nameof(ProjectsController)}";
+            _option = option.Value;
+        }
+
         // api/projects?query=net core GET
         [HttpGet]
         public IActionResult Get(string query)

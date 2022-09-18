@@ -7,6 +7,11 @@ namespace DevFreela.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        public UsersController(ExampleClass example)
+        {
+
+        }
+
         // api/users/1 GET
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
