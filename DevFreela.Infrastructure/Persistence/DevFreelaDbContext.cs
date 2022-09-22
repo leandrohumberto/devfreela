@@ -8,9 +8,9 @@ namespace DevFreela.Infrastructure.Persistence
         {
             Projects = new List<Project>
             {
-                new Project("Meu project ASP.NET Core 1", "Minha descrição de projeto 1", 1, 1, 10000),
-                new Project("Meu project ASP.NET Core 2", "Minha descrição de projeto 2", 1, 1, 20000),
-                new Project("Meu project ASP.NET Core 3", "Minha descrição de projeto 3", 1, 1, 30000),
+                new Project("Meu project ASP.NET Core 1", "Minha descrição de projeto 1", 1, 2, 10000),
+                new Project("Meu project ASP.NET Core 2", "Minha descrição de projeto 2", 1, 3, 20000),
+                new Project("Meu project ASP.NET Core 3", "Minha descrição de projeto 3", 1, 2, 30000),
             };
 
             Users = new List<User>
@@ -26,11 +26,21 @@ namespace DevFreela.Infrastructure.Persistence
                 new Skill("C#"),
                 new Skill("SQL"),
             };
+
+            Comments = new List<ProjectComment>
+            {
+                new ProjectComment("Comentário do projeto", 1, 1),
+                new ProjectComment("Comentário do projeto", 1, 2),
+                new ProjectComment("Comentário do projeto", 2, 1),
+            };
         }
+
         public List<Project> Projects { get; set; }
 
         public List<User> Users { get; set; }
 
         public List<Skill> Skills { get; set; }
+
+        public List<ProjectComment> Comments { get; set; }
     }
 }
