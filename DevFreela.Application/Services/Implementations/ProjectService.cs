@@ -77,7 +77,9 @@ namespace DevFreela.Application.Services.Implementations
         public void Update(UpdateProjectInputModel inputModel)
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == inputModel.Id);
+#pragma warning disable CS8604 // Possible null reference argument.
             project?.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
+#pragma warning restore CS8604 // Possible null reference argument.
         }
     }
 }
