@@ -19,6 +19,7 @@ namespace DevFreela.Application.Services.Implementations
         {
             var user = new User(model.FullName, model.Email, model.BirthDate);
             _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
             return user.Id;
         }
 

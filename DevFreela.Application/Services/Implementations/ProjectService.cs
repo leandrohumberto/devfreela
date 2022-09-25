@@ -3,6 +3,7 @@ using DevFreela.Application.Services.Interfaces;
 using DevFreela.Application.ViewModels;
 using DevFreela.Core.Entities;
 using DevFreela.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Application.Services.Implementations
 {
@@ -24,6 +25,7 @@ namespace DevFreela.Application.Services.Implementations
                 inputModel.TotalCost);
 
             _dbContext.Projects.Add(project);
+            _dbContext.SaveChanges();
 
             return project.Id;
         }
@@ -36,18 +38,21 @@ namespace DevFreela.Application.Services.Implementations
                 inputModel.IdUser);
 
             _dbContext.Comments.Add(comment);
+            _dbContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
             project?.Cancel();
+            _dbContext.SaveChanges();
         }
 
         public void Finish(int id)
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
             project?.Finish();
+            _dbContext.SaveChanges();
         }
 
         public IEnumerable<ProjectViewModel> GetAll(string query)
@@ -58,13 +63,24 @@ namespace DevFreela.Application.Services.Implementations
 
         public ProjectDetailsViewModel GetById(int id)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+            var project = _dbContext.Projects
+                .Include(p => p.Client)
+                .Include(p => p.Freelancer)
+                .SingleOrDefault(p => p.Id == id);
 
 #pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8604 // Possible null reference argument.
             return project == null
                 ? null
-                : new ProjectDetailsViewModel(project.Id, project.Title, project.Description,
-                project.StartedAt, project.FinishedAt);
+                : new ProjectDetailsViewModel(
+                    project.Id,
+                    project.Title,
+                    project.Description,
+                    project.StartedAt,
+                    project.FinishedAt,
+                    project.Client?.FullName,
+                    project.Freelancer?.FullName);
+#pragma warning restore CS8604 // Possible null reference argument.
 #pragma warning restore CS8603 // Possible null reference return.
         }
 
@@ -72,6 +88,7 @@ namespace DevFreela.Application.Services.Implementations
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
             project?.Started();
+            _dbContext.SaveChanges();
         }
 
         public void Update(UpdateProjectInputModel inputModel)
@@ -80,6 +97,7 @@ namespace DevFreela.Application.Services.Implementations
 #pragma warning disable CS8604 // Possible null reference argument.
             project?.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
 #pragma warning restore CS8604 // Possible null reference argument.
+            _dbContext.SaveChanges();
         }
     }
 }
