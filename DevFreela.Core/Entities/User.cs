@@ -2,7 +2,9 @@
 {
     public class User : BaseEntity
     {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public User(string fullName, string email, DateTime birthDate)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             FullName = fullName;
             Email = email;
@@ -28,6 +30,8 @@
         public List<Project> OwnedProjects { get; private set; }
 
         public List<Project> FreelanceProjects { get; private set; }
+
+        public List<ProjectComment> Comments { get; private set; }
 
         public bool Active { get; private set; }
     }
