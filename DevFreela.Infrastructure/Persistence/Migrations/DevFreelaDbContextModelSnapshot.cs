@@ -113,6 +113,9 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("Disabled")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("Skills");
@@ -150,22 +153,15 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("DevFreela.Core.Entities.UserSkill", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("IdUser")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("IdSkill")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdUser")
-                        .HasColumnType("int");
+                    b.HasKey("IdUser", "IdSkill");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdSkill")
-                        .IsUnique();
+                    b.HasIndex("IdSkill");
 
                     b.ToTable("UserSkills");
                 });
@@ -211,23 +207,30 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("DevFreela.Core.Entities.UserSkill", b =>
                 {
                     b.HasOne("DevFreela.Core.Entities.Skill", "Skill")
-                        .WithOne()
-                        .HasForeignKey("DevFreela.Core.Entities.UserSkill", "IdSkill")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("DevFreela.Core.Entities.User", null)
-                        .WithMany("Skills")
+                        .WithMany("UserSkills")
                         .HasForeignKey("IdSkill")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("DevFreela.Core.Entities.User", "User")
+                        .WithMany("UserSkills")
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Skill");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DevFreela.Core.Entities.Project", b =>
                 {
                     b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("DevFreela.Core.Entities.Skill", b =>
+                {
+                    b.Navigation("UserSkills");
                 });
 
             modelBuilder.Entity("DevFreela.Core.Entities.User", b =>
@@ -238,7 +241,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
 
                     b.Navigation("OwnedProjects");
 
-                    b.Navigation("Skills");
+                    b.Navigation("UserSkills");
                 });
 #pragma warning restore 612, 618
         }

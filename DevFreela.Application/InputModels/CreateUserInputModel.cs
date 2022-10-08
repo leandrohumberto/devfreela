@@ -11,5 +11,7 @@
 
         public DateTime BirthDate { get; set; }
 
+        public List<int>? Skills { get; set; }
+
     }
 }

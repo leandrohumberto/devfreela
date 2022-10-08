@@ -1,6 +1,7 @@
 ﻿using DevFreela.API.Models;
 using DevFreela.Application.InputModels;
 using DevFreela.Application.Services.Interfaces;
+using DevFreela.Application.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevFreela.API.Controllers
@@ -15,6 +16,7 @@ namespace DevFreela.API.Controllers
 
         // api/users/1 GET
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(UserDetailViewModel), 200)]
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);

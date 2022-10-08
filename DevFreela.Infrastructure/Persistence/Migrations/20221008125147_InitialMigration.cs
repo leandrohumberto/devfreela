@@ -16,7 +16,8 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Disabled = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,14 +78,12 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 name: "UserSkills",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     IdUser = table.Column<int>(type: "int", nullable: false),
                     IdSkill = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserSkills", x => x.Id);
+                    table.PrimaryKey("PK_UserSkills", x => new { x.IdUser, x.IdSkill });
                     table.ForeignKey(
                         name: "FK_UserSkills_Skills_IdSkill",
                         column: x => x.IdSkill,
@@ -92,8 +91,8 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserSkills_Users_IdSkill",
-                        column: x => x.IdSkill,
+                        name: "FK_UserSkills_Users_IdUser",
+                        column: x => x.IdUser,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -150,8 +149,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UserSkills_IdSkill",
                 table: "UserSkills",
-                column: "IdSkill",
-                unique: true);
+                column: "IdSkill");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

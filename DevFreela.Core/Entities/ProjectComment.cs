@@ -1,10 +1,9 @@
 ﻿namespace DevFreela.Core.Entities
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public class ProjectComment : BaseEntity
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public ProjectComment(string content, int idProject, int idUser)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             Content = content;
             this.IdProject = idProject;

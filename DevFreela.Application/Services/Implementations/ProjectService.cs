@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Application.Services.Implementations
 {
+#pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8604 // Possible null reference argument.
     public class ProjectService : IProjectService
     {
         private readonly DevFreelaDbContext _dbContext;
@@ -43,14 +45,14 @@ namespace DevFreela.Application.Services.Implementations
 
         public void Delete(int id)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+            var project = _dbContext.Projects.Single(p => p.Id == id);
             project?.Cancel();
             _dbContext.SaveChanges();
         }
 
         public void Finish(int id)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+            var project = _dbContext.Projects.Single(p => p.Id == id);
             project?.Finish();
             _dbContext.SaveChanges();
         }
@@ -68,8 +70,6 @@ namespace DevFreela.Application.Services.Implementations
                 .Include(p => p.Freelancer)
                 .SingleOrDefault(p => p.Id == id);
 
-#pragma warning disable CS8603 // Possible null reference return.
-#pragma warning disable CS8604 // Possible null reference argument.
             return project == null
                 ? null
                 : new ProjectDetailsViewModel(
@@ -80,23 +80,19 @@ namespace DevFreela.Application.Services.Implementations
                     project.FinishedAt,
                     project.Client?.FullName,
                     project.Freelancer?.FullName);
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public void Start(int id)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+            var project = _dbContext.Projects.Single(p => p.Id == id);
             project?.Started();
             _dbContext.SaveChanges();
         }
 
         public void Update(UpdateProjectInputModel inputModel)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == inputModel.Id);
-#pragma warning disable CS8604 // Possible null reference argument.
+            var project = _dbContext.Projects.Single(p => p.Id == inputModel.Id);
             project?.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
-#pragma warning restore CS8604 // Possible null reference argument.
             _dbContext.SaveChanges();
         }
     }

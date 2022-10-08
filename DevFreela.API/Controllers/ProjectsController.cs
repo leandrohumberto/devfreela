@@ -1,6 +1,7 @@
 ﻿using DevFreela.API.Models;
 using DevFreela.Application.InputModels;
 using DevFreela.Application.Services.Interfaces;
+using DevFreela.Application.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -16,6 +17,7 @@ namespace DevFreela.API.Controllers
 
         // api/projects?query=net core GET
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<ProjectViewModel>), 200)]
         public IActionResult Get(string query)
         {
             var projects = _projectService.GetAll(query);
@@ -24,6 +26,7 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1 GET
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ProjectDetailsViewModel), 200)]
         public IActionResult GetById(int id)
         {
             var project = _projectService.GetById(id);

@@ -1,10 +1,9 @@
 ﻿namespace DevFreela.Core.Entities
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public class User : BaseEntity
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public User(string fullName, string email, DateTime birthDate)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             FullName = fullName;
             Email = email;
@@ -12,7 +11,7 @@
             CreatedAt = DateTime.Now;
             Active = true;
 
-            Skills = new List<UserSkill>();
+            UserSkills = new List<UserSkill>();
             OwnedProjects = new List<Project>();
             FreelanceProjects = new List<Project>();
         }
@@ -25,7 +24,7 @@
 
         public DateTime CreatedAt { get; private set; }
 
-        public List<UserSkill> Skills { get; private set; }
+        public List<UserSkill> UserSkills { get; private set; }
 
         public List<Project> OwnedProjects { get; private set; }
 

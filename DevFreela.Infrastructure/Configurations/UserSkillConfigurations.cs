@@ -8,11 +8,16 @@ namespace DevFreela.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<UserSkill> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(x =>  new { x.IdUser, x.IdSkill });
 
             builder.HasOne(p => p.Skill)
-                .WithOne()
-                .HasForeignKey<UserSkill>(p => p.IdSkill)
+                .WithMany(p => p.UserSkills)
+                .HasForeignKey(p => p.IdSkill)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.User)
+                .WithMany(p => p.UserSkills)
+                .HasForeignKey(p => p.IdUser)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
