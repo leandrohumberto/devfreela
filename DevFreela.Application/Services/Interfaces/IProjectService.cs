@@ -11,11 +11,11 @@ namespace DevFreela.Application.Services.Interfaces
 
         int Create(NewProjectInputModel inputModel);
 
-        void Update(UpdateProjectInputModel inputModel);
+        void Update(int id, UpdateProjectInputModel inputModel);
 
         void Delete(int id);
 
-        void CreateComment(CreateCommentInputModel inputModel);
+        void CreateComment(int id, CreateCommentInputModel inputModel);
 
         void Start(int id);
 

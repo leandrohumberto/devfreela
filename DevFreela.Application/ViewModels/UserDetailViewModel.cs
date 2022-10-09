@@ -10,7 +10,9 @@ namespace DevFreela.Application.ViewModels
             Email = email;
             BirthDate = birthDate;
             Active = active;
-            Skills = new List<SkillViewModel>(skills);
+
+            Skills = Enumerable.Empty<SkillViewModel>();
+            foreach (var skill in skills) Skills = Skills.Append(skill);
         }
 
         public string FullName { get; private set; }

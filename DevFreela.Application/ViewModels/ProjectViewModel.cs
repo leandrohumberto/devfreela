@@ -4,6 +4,7 @@
     {
         public ProjectViewModel(int id, string title, DateTime createdAt)
         {
+            Id = id;
             Title = title;
             CreatedAt = createdAt;
         }

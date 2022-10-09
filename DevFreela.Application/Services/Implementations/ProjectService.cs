@@ -32,11 +32,11 @@ namespace DevFreela.Application.Services.Implementations
             return project.Id;
         }
 
-        public void CreateComment(CreateCommentInputModel inputModel)
+        public void CreateComment(int id, CreateCommentInputModel inputModel)
         {
             var comment = new ProjectComment(
                 inputModel.Content,
-                inputModel.IdProject,
+                id,
                 inputModel.IdUser);
 
             _dbContext.Comments.Add(comment);
@@ -68,6 +68,8 @@ namespace DevFreela.Application.Services.Implementations
             var project = _dbContext.Projects
                 .Include(p => p.Client)
                 .Include(p => p.Freelancer)
+                .Include(p => p.Comments)
+                .ThenInclude(p => p.User)
                 .SingleOrDefault(p => p.Id == id);
 
             return project == null
@@ -79,7 +81,9 @@ namespace DevFreela.Application.Services.Implementations
                     project.StartedAt,
                     project.FinishedAt,
                     project.Client?.FullName,
-                    project.Freelancer?.FullName);
+                    project.Freelancer?.FullName,
+                    project.TotalCost,
+                    project.Comments.Select(c => new CommentViewModel(c.Content, c.User.FullName)));
         }
 
         public void Start(int id)
@@ -89,9 +93,9 @@ namespace DevFreela.Application.Services.Implementations
             _dbContext.SaveChanges();
         }
 
-        public void Update(UpdateProjectInputModel inputModel)
+        public void Update(int id, UpdateProjectInputModel inputModel)
         {
-            var project = _dbContext.Projects.Single(p => p.Id == inputModel.Id);
+            var project = _dbContext.Projects.Single(p => p.Id == id);
             project?.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
             _dbContext.SaveChanges();
         }

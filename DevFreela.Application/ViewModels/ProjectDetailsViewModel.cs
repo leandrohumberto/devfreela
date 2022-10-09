@@ -3,7 +3,8 @@
     public class ProjectDetailsViewModel
     {
         public ProjectDetailsViewModel(int id, string title, string description, DateTime? startedAt,
-            DateTime? finishedAt, string clientFullName, string freelancerFullName)
+            DateTime? finishedAt, string clientFullName, string freelancerFullName, decimal totalCost, 
+            IEnumerable<CommentViewModel> comments)
         {
             Id = id;
             Title = title;
@@ -12,6 +13,10 @@
             FinishedAt = finishedAt;
             ClientFullName = clientFullName;
             FreelancerFullName = freelancerFullName;
+            TotalCost = totalCost;
+
+            Comments = Enumerable.Empty<CommentViewModel>();
+            foreach (var comment in comments) Comments = Comments.Append(comment);
         }
 
         public int Id { get; private set; }
@@ -27,5 +32,9 @@
         public string? ClientFullName { get; private set; }
         
         public string? FreelancerFullName { get; private set; }
+
+        public decimal TotalCost { get; private set; }
+
+        public IEnumerable<CommentViewModel> Comments { get; private set; }
     }
 }

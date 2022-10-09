@@ -61,7 +61,7 @@ namespace DevFreela.API.Controllers
 
             if (_projectService.GetById(id) == null) return NotFound();
 
-            _projectService.Update(inputModel);
+            _projectService.Update(id, inputModel);
 
             return NoContent();
         }
@@ -83,7 +83,7 @@ namespace DevFreela.API.Controllers
         {
             if (_projectService.GetById(id) == null) return NotFound();
 
-            _projectService.CreateComment(inputModel);
+            _projectService.CreateComment(id, inputModel);
 
             return NoContent();
         }
