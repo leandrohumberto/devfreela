@@ -56,7 +56,7 @@ namespace DevFreela.Application.Services.Implementations
             {
                 foreach (var userSkill in user.UserSkills)
                 {
-                    skillViewModel.Add(new SkillViewModel(userSkill.Skill.Id, userSkill.Skill.Description));
+                    skillViewModel.Add(new SkillViewModel(userSkill.Skill.Id, userSkill.Skill.Description, userSkill.Skill.Disabled));
                 }
             }
 

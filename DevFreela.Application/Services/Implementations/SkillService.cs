@@ -45,13 +45,13 @@ namespace DevFreela.Application.Services.Implementations
         }
 
         public IEnumerable<SkillViewModel> GetAll()
-            => _dbContext.Skills.Select(s => new SkillViewModel(s.Id, s.Description));
+            => _dbContext.Skills.Select(s => new SkillViewModel(s.Id, s.Description, s.Disabled));
 
         public SkillViewModel GetById(int id)
         {
             var skill = _dbContext.Skills.Where(s => s.Id == id).SingleOrDefault();
 
-            return skill != null ? new SkillViewModel(skill.Id, skill.Description) : null;
+            return skill != null ? new SkillViewModel(skill.Id, skill.Description, skill.Disabled) : null;
         }
 
         public void Update(int id, UpdateSkillInputModel inputModel)

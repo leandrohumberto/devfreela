@@ -7,8 +7,35 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Implementations\ProjectService.cs" />
+    <Compile Remove="Services\Implementations\SkillService.cs" />
+    <Compile Remove="Services\Implementations\UserService.cs" />
+    <Compile Remove="Services\Interfaces\IProjectService.cs" />
+    <Compile Remove="Services\Interfaces\ISkillService.cs" />
+    <Compile Remove="Services\Interfaces\IUserService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Commands\CreateSkill\CreateSkillCommandHandler.cs~RF6455c427.TMP" />
+    <None Remove="Commands\UpdateSkill\UpdateSkillCommandHandler.cs~RF64497536.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Services\Implementations\ProjectService.cs" />
+    <None Include="Services\Implementations\SkillService.cs" />
+    <None Include="Services\Implementations\UserService.cs" />
+    <None Include="Services\Interfaces\IProjectService.cs" />
+    <None Include="Services\Interfaces\ISkillService.cs" />
+    <None Include="Services\Interfaces\IUserService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DevFreela.Core\DevFreela.Core.csproj" />
     <ProjectReference Include="..\DevFreela.Infrastructure\DevFreela.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
   </ItemGroup>
 
 </Project>
