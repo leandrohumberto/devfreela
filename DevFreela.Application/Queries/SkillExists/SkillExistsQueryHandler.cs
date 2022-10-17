@@ -1,16 +1,15 @@
-﻿using DevFreela.Infrastructure.Persistence;
+﻿using DevFreela.Core.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Application.Queries.SkillExists
 {
     public class SkillExistsQueryHandler : IRequestHandler<SkillExistsQuery, bool>
     {
-        private readonly DevFreelaDbContext _dbContext;
+        private readonly ISkillRepository _repository;
 
-        public SkillExistsQueryHandler(DevFreelaDbContext dbContext) => _dbContext = dbContext;
+        public SkillExistsQueryHandler(ISkillRepository repository) => _repository = repository;
 
         public async Task<bool> Handle(SkillExistsQuery request, CancellationToken cancellationToken)
-            => await _dbContext.Skills.AnyAsync(p => p.Id == request.Id, cancellationToken);
+            => await _repository.ExistsAsync(request.Id, cancellationToken);
     }
 }

@@ -1,16 +1,15 @@
-﻿using DevFreela.Infrastructure.Persistence;
+﻿using DevFreela.Core.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Application.Queries.ProjectExists
 {
     public class ProjectExistsQueryHandler : IRequestHandler<ProjectExistsQuery, bool>
     {
-        private readonly DevFreelaDbContext _dbContext;
+        private readonly IProjectRepository _repository;
 
-        public ProjectExistsQueryHandler(DevFreelaDbContext dbContext) => _dbContext = dbContext;
+        public ProjectExistsQueryHandler(IProjectRepository dbContext) => _repository = dbContext;
 
         public async Task<bool> Handle(ProjectExistsQuery request, CancellationToken cancellationToken)
-            => await _dbContext.Projects.AnyAsync(p => p.Id == request.Id, cancellationToken);
+            => await _repository.ExistsAsync(request.Id, cancellationToken);
     }
 }

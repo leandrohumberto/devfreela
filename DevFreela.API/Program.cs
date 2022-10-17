@@ -1,7 +1,9 @@
 using DevFreela.Application.Commands.CreateProject;
+using DevFreela.Core.Repositories;
 //using DevFreela.Application.Services.Implementations;
 //using DevFreela.Application.Services.Interfaces;
 using DevFreela.Infrastructure.Persistence;
+using DevFreela.Infrastructure.Persistence.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +20,9 @@ builder.Services.AddDbContext<DevFreelaDbContext>(p => p.UseSqlServer(connection
 //builder.Services.AddScoped<IProjectService, ProjectService>();
 //builder.Services.AddScoped<IUserService, UserService>();
 //builder.Services.AddScoped<ISkillService, SkillService>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddMediatR(typeof(CreateProjectCommand));
 
 var app = builder.Build();

@@ -1,38 +1,24 @@
 ﻿using DevFreela.Application.ViewModels;
-using DevFreela.Infrastructure.Persistence;
+using DevFreela.Core.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevFreela.Application.Queries.GetProjectById
 {
-#pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable CS8604 // Possible null reference argument.
     public class GetProjectByIdQueryHandler : IRequestHandler<GetProjectByIdQuery, ProjectDetailsViewModel>
     {
-        private readonly DevFreelaDbContext _dbContext;
+        private readonly IProjectRepository _repository;
 
-        public GetProjectByIdQueryHandler(DevFreelaDbContext dbContext)
+        public GetProjectByIdQueryHandler(IProjectRepository dbContext)
         {
-            _dbContext = dbContext;
+            _repository = dbContext;
         }
 
         public async Task<ProjectDetailsViewModel> Handle(GetProjectByIdQuery request, CancellationToken cancellationToken)
         {
-            var project = await _dbContext.Projects
-                .Include(p => p.Client)
-                .Include(p => p.Freelancer)
-                .Include(p => p.Comments)
-                .ThenInclude(p => p.User)
-                .SingleOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+            var project = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
-            return project == null
-                ? null
-                : new ProjectDetailsViewModel(
+            return new ProjectDetailsViewModel(
                     project.Id,
                     project.Title,
                     project.Description,
