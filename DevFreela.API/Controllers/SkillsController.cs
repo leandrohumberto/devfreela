@@ -48,11 +48,11 @@ namespace DevFreela.API.Controllers
 
         // api/skills POST
         [HttpPost]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(CreateSkillCommand), 200)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         public async Task<IActionResult> Post([FromBody] CreateSkillCommand command)
         {
-            if (string.IsNullOrWhiteSpace(command.Description)) return BadRequest(
-                new { error = $"'{nameof(command.Description)}' cannot be null or empty." });
-
             //var id = _skillService.Create(command);
             var id = await _mediator.Send(command);
 
@@ -63,11 +63,10 @@ namespace DevFreela.API.Controllers
 
         // api/skills PUT
         [HttpPut("{id}")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateSkillCommand command)
         {
-            if (string.IsNullOrWhiteSpace(command.Description)) return BadRequest(
-                new { error = $"'{nameof(command.Description)}' cannot be null or empty." });
-
             //var skill = _skillService.GetById(id);
             var skillExists = await _mediator.Send(new SkillExistsQuery(id));
             if (!skillExists) return NotFound();

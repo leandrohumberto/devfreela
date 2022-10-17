@@ -2,7 +2,6 @@
 using DevFreela.Application.Commands.CreateUser;
 using DevFreela.Application.Queries.GetUserById;
 using DevFreela.Application.Queries.UserExists;
-using DevFreela.Application.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +22,6 @@ namespace DevFreela.API.Controllers
 
         // api/users/1 GET
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(UserDetailViewModel), 200)]
         public async Task<IActionResult> GetById(int id)
         {
             //var user = _userService.GetById(id);
@@ -37,6 +35,9 @@ namespace DevFreela.API.Controllers
 
         // api/users POST
         [HttpPost]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(CreateUserCommand), 200)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         public async Task<IActionResult> Post([FromBody] CreateUserCommand command)
         {
             //var id = _userService.Create(command);

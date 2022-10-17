@@ -52,13 +52,11 @@ namespace DevFreela.API.Controllers
 
         // api/projects POST
         [HttpPost]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(CreateProjectCommand), 200)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         public async Task<IActionResult> Post([FromBody] CreateProjectCommand command)
         {
-            if (command.Title?.Length > 50)
-            {
-                return BadRequest(new { error = $"{nameof(command.Title)} must be up to 50 character long" });
-            }
-
             // var id = _projectService.Create(inputModel);
             var id = await _mediator.Send(command);
 
@@ -67,13 +65,10 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1 PUT
         [HttpPut("{id}")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateProjectCommand command)
         {
-            if (command.Description?.Length > 200)
-            {
-                return BadRequest(new { error = $"{nameof(command.Description)} must be up to 200 character long" });
-            }
-
             var projectExists = await _mediator.Send(new ProjectExistsQuery(id));
             if (!projectExists) return NotFound();
 
@@ -99,6 +94,8 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1/comments POST
         [HttpPost("{id}/comments")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
         public async Task<IActionResult> PostComment(int id, [FromBody] CreateCommentCommand command)
         {
             var projectExists = await _mediator.Send(new ProjectExistsQuery(id));
