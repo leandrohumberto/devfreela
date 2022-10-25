@@ -1,5 +1,6 @@
 ﻿using DevFreela.Core.Entities;
 using DevFreela.Core.Repositories;
+using DevFreela.Core.Services;
 using MediatR;
 
 namespace DevFreela.Application.Commands.CreateUser
@@ -8,23 +9,27 @@ namespace DevFreela.Application.Commands.CreateUser
     {
         private readonly IUserRepository _userRepository;
         private readonly ISkillRepository _skillRepository;
+        private readonly IAuthService _authService;
 
-        public CreateUserCommandHandler(IUserRepository userRepository, ISkillRepository skillRepository)
+        public CreateUserCommandHandler(IUserRepository userRepository, ISkillRepository skillRepository, IAuthService authService)
         {
             _userRepository = userRepository;
             _skillRepository = skillRepository;
+            _authService = authService;
         }
 
-        public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateUserCommand command, CancellationToken cancellationToken)
         {
-            var user = new User(request.FullName, request.Email, request.BirthDate.Date);
+            var passwordHash = _authService.ComputeSha256Hash(command.Password);
+            var user = new User(command.FullName, command.Email, command.BirthDate.Date,
+                passwordHash, command.Role);
 
             await _userRepository.AddAsync(user, cancellationToken);
             await _userRepository.SaveChangesAsync(cancellationToken);
 
-            if (request.Skills != null)
+            if (command.Skills != null)
             {
-                foreach (var idSkill in request.Skills)
+                foreach (var idSkill in command.Skills)
                 {
                     if (await _skillRepository.ExistsAsync(idSkill, cancellationToken))
                     {

@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace DevFreela.Application.Validators
 {
-    public  class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+    public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     {
         public CreateUserCommandValidator()
         {
@@ -12,7 +12,9 @@ namespace DevFreela.Application.Validators
                 .EmailAddress();
 
             RuleFor(u => u.Password)
-                .Must(ValidPassword);
+                .Must(ValidPassword)
+                .WithMessage("Password must be at least 8-character long, and contain a number, " +
+                    "a lower case letter, uppercase letter, and a special character.");
 
             RuleFor(u => u.FullName)
                 .NotNull()

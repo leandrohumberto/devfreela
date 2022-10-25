@@ -6,14 +6,18 @@ using DevFreela.Application.Queries.GetSkillById;
 using DevFreela.Application.Queries.SkillExists;
 using DevFreela.Application.ViewModels;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevFreela.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SkillsController : ControllerBase
     {
+        private const string applicationJsonMediaType = "application/json";
+
         //private readonly ISkillService _skillService;
         private readonly IMediator _mediator;
 
@@ -25,7 +29,10 @@ namespace DevFreela.API.Controllers
 
         // api/skills GET
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<SkillViewModel>), 200)]
+        [Authorize(Roles = "client, freelancer")]
+        [ProducesResponseType(typeof(IEnumerable<SkillViewModel>), StatusCodes.Status200OK, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Get()
         {
             //var skills = _skillService.GetAll();
@@ -35,7 +42,11 @@ namespace DevFreela.API.Controllers
 
         // api/skills GET
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(SkillViewModel), 200)]
+        [Authorize(Roles = "client, freelancer")]
+        [ProducesResponseType(typeof(SkillViewModel), StatusCodes.Status200OK, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
             //var skill = _skillService.GetById(id);
@@ -48,9 +59,13 @@ namespace DevFreela.API.Controllers
 
         // api/skills POST
         [HttpPost]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(CreateSkillCommand), 200)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [Authorize(Roles = "client, freelancer")]
+        [Consumes(applicationJsonMediaType)]
+        [ProducesResponseType(typeof(CreateSkillCommand), StatusCodes.Status201Created, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Post([FromBody] CreateSkillCommand command)
         {
             //var id = _skillService.Create(command);
@@ -63,8 +78,13 @@ namespace DevFreela.API.Controllers
 
         // api/skills PUT
         [HttpPut("{id}")]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [Authorize(Roles = "client, freelancer")]
+        [Consumes(applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateSkillCommand command)
         {
             //var skill = _skillService.GetById(id);
@@ -79,6 +99,11 @@ namespace DevFreela.API.Controllers
 
         // api/skills DELETE
         [HttpDelete("{id}")]
+        [Authorize(Roles = "client, freelancer")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
             //var skill = _skillService.GetById(id);

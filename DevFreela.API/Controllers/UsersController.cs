@@ -1,16 +1,21 @@
-﻿using DevFreela.API.Models;
-using DevFreela.Application.Commands.CreateUser;
+﻿using DevFreela.Application.Commands.CreateUser;
+using DevFreela.Application.Commands.LoginUser;
 using DevFreela.Application.Queries.GetUserById;
 using DevFreela.Application.Queries.UserExists;
+using DevFreela.Application.ViewModels;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevFreela.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
+        private const string applicationJsonMediaType = "application/json";
+
         //private readonly IUserService _userService;
         private readonly IMediator _mediator;
 
@@ -22,6 +27,10 @@ namespace DevFreela.API.Controllers
 
         // api/users/1 GET
         [HttpGet("{id}")]
+        [Authorize(Roles = "client, freelancer")]
+        [ProducesResponseType(typeof(IEnumerable<UserDetailViewModel>), StatusCodes.Status200OK, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetById(int id)
         {
             //var user = _userService.GetById(id);
@@ -35,9 +44,11 @@ namespace DevFreela.API.Controllers
 
         // api/users POST
         [HttpPost]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(CreateUserCommand), 200)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [AllowAnonymous]
+        [Consumes(applicationJsonMediaType)]
+        [ProducesResponseType(typeof(CreateUserCommand), StatusCodes.Status201Created, applicationJsonMediaType)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Post([FromBody] CreateUserCommand command)
         {
             //var id = _userService.Create(command);
@@ -45,11 +56,24 @@ namespace DevFreela.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id }, command);
         }
 
-        // api/users/1/login PUT
-        [HttpPut("{id}/login")]
-        public IActionResult Login(int id, [FromBody] LoginModel login)
+        // api/users/login PUT
+        [HttpPut("login")]
+        [AllowAnonymous]
+        [Consumes(applicationJsonMediaType)]
+        [ProducesResponseType(typeof(LoginUserViewModel), StatusCodes.Status200OK, applicationJsonMediaType)]
+        [ProducesResponseType(typeof(LoginUserViewModel), StatusCodes.Status400BadRequest, applicationJsonMediaType)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
         {
-            return NoContent();
+            var viewModel = await _mediator.Send(command);
+
+            if (viewModel == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(viewModel);
         }
     }
 }

@@ -16,6 +16,9 @@ namespace DevFreela.Infrastructure.Persistence.Repositories
         public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default)
             => await _dbContext.Users.AnyAsync(p => p.Id == id, cancellationToken);
 
+        public async Task<User> GetByEmailAndPasswordAsync(string email, string passwordHash, CancellationToken cancellationToken)
+            => await _dbContext.Users.SingleAsync(p => p.Email == email && p.Password == passwordHash, cancellationToken);
+
         public async Task<User> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await _dbContext.Users
                 .Include(p => p.UserSkills.Where(s => s.Skill.Disabled != true))

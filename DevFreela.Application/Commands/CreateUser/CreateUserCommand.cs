@@ -4,12 +4,13 @@ namespace DevFreela.Application.Commands.CreateUser
 {
     public class CreateUserCommand : IRequest<int>
     {
-        public CreateUserCommand(string fullName, string password, string email, DateTime birthDate, IEnumerable<int>? skills)
+        public CreateUserCommand(string fullName, string password, string email, DateTime birthDate, string role, IEnumerable<int>? skills)
         {
             FullName = fullName;
             Password = password;
             Email = email;
             BirthDate = birthDate;
+            Role = role;
             Skills = Enumerable.Empty<int>();
 
             if (skills != null)
@@ -26,6 +27,8 @@ namespace DevFreela.Application.Commands.CreateUser
         public string Password { get; private set; }
 
         public string Email { get; private set; }
+
+        public string Role { get; private set; }
 
         public DateTime BirthDate { get; private set; }
 

@@ -9,14 +9,18 @@ using DevFreela.Application.Queries.GetProjectById;
 using DevFreela.Application.Queries.ProjectExists;
 using DevFreela.Application.ViewModels;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevFreela.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectsController : ControllerBase
     {
+        private const string applicationJsonMediaType = "application/json";
+
         //private readonly IProjectService _projectService;
         private readonly IMediator _mediator;
 
@@ -28,7 +32,10 @@ namespace DevFreela.API.Controllers
 
         // api/projects?query=net core GET
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ProjectViewModel>), 200)]
+        [Authorize(Roles = "client, freelancer")]
+        [ProducesResponseType(typeof(IEnumerable<ProjectViewModel>), StatusCodes.Status200OK, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Get(string query)
         {
             //var projects = _projectService.GetAll(query);
@@ -39,22 +46,30 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1 GET
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(ProjectDetailsViewModel), 200)]
+        [Authorize(Roles = "client, freelancer")]
+        [ProducesResponseType(typeof(ProjectDetailsViewModel), StatusCodes.Status200OK, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
+            if (!await _mediator.Send(new ProjectExistsQuery(id))) return NotFound();
+
             //var project = _projectService.GetById(id);
-            var query = new GetProjectByIdQuery(id);
-            var project = await _mediator.Send(query);
-            if (project == null) return NotFound();
+            var getProjectByIdQuery = new GetProjectByIdQuery(id);
+            var project = await _mediator.Send(getProjectByIdQuery);
             
             return Ok(project);
         }
 
         // api/projects POST
         [HttpPost]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(CreateProjectCommand), 200)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [Authorize(Roles = "client")]
+        [Consumes(applicationJsonMediaType)]
+        [ProducesResponseType(typeof(CreateProjectCommand), StatusCodes.Status201Created, applicationJsonMediaType)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Post([FromBody] CreateProjectCommand command)
         {
             // var id = _projectService.Create(inputModel);
@@ -65,8 +80,13 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1 PUT
         [HttpPut("{id}")]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [Authorize(Roles = "client")]
+        [Consumes(applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateProjectCommand command)
         {
             var projectExists = await _mediator.Send(new ProjectExistsQuery(id));
@@ -81,6 +101,11 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1 DELETE
         [HttpDelete("{id}")]
+        [Authorize(Roles = "client")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
             var projectExists = await _mediator.Send(new ProjectExistsQuery(id));
@@ -94,8 +119,13 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1/comments POST
         [HttpPost("{id}/comments")]
-        [Consumes("application/json")]
-        [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+        [Authorize(Roles = "client, freelancer")]
+        [Consumes(applicationJsonMediaType)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PostComment(int id, [FromBody] CreateCommentCommand command)
         {
             var projectExists = await _mediator.Send(new ProjectExistsQuery(id));
@@ -110,6 +140,11 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1/start PUT
         [HttpPut("{id}/start")]
+        [Authorize(Roles = "client")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Start(int id)
         {
             var projectExists = await _mediator.Send(new ProjectExistsQuery(id));
@@ -123,6 +158,11 @@ namespace DevFreela.API.Controllers
 
         // api/projects/1/finish PUT
         [HttpPut("{id}/finish")]
+        [Authorize(Roles = "client")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Finish(int id)
         {
             var projectExists = await _mediator.Send(new ProjectExistsQuery(id));
