@@ -38,6 +38,7 @@ namespace DevFreela.API.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Get(string query)
         {
+            throw new Exception("Caralho");
             //var projects = _projectService.GetAll(query);
             var getAllProjectsQuery = new GetAllProjectsQuery(query);
             var projects = await _mediator.Send(getAllProjectsQuery);

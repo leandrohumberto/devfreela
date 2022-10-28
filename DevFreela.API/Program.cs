@@ -1,14 +1,12 @@
 using DevFreela.Application.Commands.CreateProject;
 using DevFreela.Application.Validators;
 using DevFreela.Core.Repositories;
-//using DevFreela.Application.Services.Implementations;
-//using DevFreela.Application.Services.Interfaces;
-using DevFreela.Infrastructure.Persistence;
 using DevFreela.Infrastructure.Persistence.Repositories;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 using DevFreela.API.Filters;
 using DevFreela.Core.Services;
 using DevFreela.Infrastructure.Auth;
@@ -16,11 +14,13 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DevFreela.Infrastructure.Logging;
+using DevFreela.API.Extensions;
+using DevFreela.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers(options => options.Filters.Add(typeof(ValidationFilter)));
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
@@ -85,9 +85,18 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<ILoggerService, LoggerService>();
 builder.Services.AddMediatR(typeof(CreateProjectCommand));
-///builder.Services.AddControllersWithViews(options => options.Filters.Add)
+
+// Configure Logger Service
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+
 var app = builder.Build();
+
+// Configure exception hadling
+var logger = app.Services.GetRequiredService<ILoggerService>();
+app.ConfigureExceptionHandler(logger);
+app.ConfigureCustomExceptionMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -95,6 +104,9 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DevFreela.API v1"));
+
+    app.ConfigureExceptionHandler(logger);
+    app.ConfigureCustomExceptionMiddleware();
 }
 
 app.UseHttpsRedirection();
