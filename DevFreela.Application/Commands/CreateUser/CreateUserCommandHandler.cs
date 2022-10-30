@@ -1,4 +1,5 @@
 ﻿using DevFreela.Core.Entities;
+using DevFreela.Core.Exceptions;
 using DevFreela.Core.Repositories;
 using DevFreela.Core.Services;
 using MediatR;
@@ -20,6 +21,11 @@ namespace DevFreela.Application.Commands.CreateUser
 
         public async Task<int> Handle(CreateUserCommand command, CancellationToken cancellationToken)
         {
+            if (await _userRepository.ExistsAsync(command.Email, cancellationToken))
+            {
+                throw new InvalidUserEmailException(command.Email, "Email already exists.");
+            }
+
             var passwordHash = _authService.ComputeSha256Hash(command.Password);
             var user = new User(command.FullName, command.Email, command.BirthDate.Date,
                 passwordHash, command.Role);

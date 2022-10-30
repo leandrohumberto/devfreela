@@ -1,4 +1,5 @@
 ﻿using DevFreela.API.Models;
+using DevFreela.Core.Exceptions;
 using DevFreela.Core.Services;
 using System.Net;
 
@@ -21,20 +22,31 @@ namespace DevFreela.API.CustomExceptionMiddleware
             {
                 await _next(context);
             }
+            catch (LoginFailException ex)
+            {
+                _logger.LogError($"Login failed for credentials {ex.Email} - {ex.Password}: {ex}");
+                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (InvalidUserEmailException ex)
+            {
+                _logger.LogError($"Invalid user email - {ex.Email}: {ex}");
+                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong: {ex}");
-                await HandleExceptionAsync(context);
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
+                    "Internal Server Error.");
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context)
+        private static async Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, string message)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.StatusCode = (int)statusCode;
 
             await context.Response.WriteAsync(new ErrorDetails(context.Response.StatusCode,
-                "Internal Server Error.").ToString());
+                message).ToString());
         }
     }
 }

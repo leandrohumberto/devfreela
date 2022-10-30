@@ -1,4 +1,5 @@
 ﻿using DevFreela.Application.ViewModels;
+using DevFreela.Core.Exceptions;
 using DevFreela.Core.Repositories;
 using DevFreela.Core.Services;
 using MediatR;
@@ -25,6 +26,11 @@ namespace DevFreela.Application.Commands.LoginUser
             var user = await _userRepository.GetByEmailAndPasswordAsync(request.Email, passwordHash, cancellationToken);
 
             // Se não existir, erro no login
+            if (user == null)
+            {
+                throw new LoginFailException(request.Email, request.Password,
+                    $"Incorrect {nameof(request.Email)} or {nameof(request.Password)}");
+            }
             
             // Se existir, gero o token usando os dados do usuário
             var token = _authService.GenerateJwtToken(email: user.Email, role: user.Role);
