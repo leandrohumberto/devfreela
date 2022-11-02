@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="internal_logs\**" />
+    <Content Remove="internal_logs\**" />
+    <EmbeddedResource Remove="internal_logs\**" />
+    <None Remove="internal_logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Controllers\SkillsController.cs~RF6486656e.TMP" />
   </ItemGroup>
 

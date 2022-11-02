@@ -26,8 +26,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/users/1 GET
-        [HttpGet("{id}")]
-        [Authorize(Roles = "client, freelancer")]
+        [HttpGet("{id:int}")]
+        [Authorize(Roles = "Client, Freelancer")]
         [ProducesResponseType(typeof(IEnumerable<UserDetailViewModel>), StatusCodes.Status200OK, applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

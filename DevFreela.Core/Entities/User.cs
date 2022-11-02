@@ -1,8 +1,10 @@
-﻿namespace DevFreela.Core.Entities
+﻿using DevFreela.Core.Enums;
+
+namespace DevFreela.Core.Entities
 {
     public class User : BaseEntity
     {
-        public User(string fullName, string email, DateTime birthDate, string password, string role)
+        public User(string fullName, string email, DateTime birthDate, string password, RoleEnum role)
         {
             FullName = fullName;
             Email = email;
@@ -26,7 +28,7 @@
 
         public string Password { get; private set; }
 
-        public string Role { get; private set; }
+        public RoleEnum Role { get; private set; }
 
         public DateTime CreatedAt { get; private set; }
 

@@ -32,7 +32,7 @@ namespace DevFreela.API.Controllers
 
         // api/projects?query=net core GET
         [HttpGet]
-        [Authorize(Roles = "client, freelancer")]
+        [Authorize(Roles = "Client, Freelancer")]
         [ProducesResponseType(typeof(IEnumerable<ProjectViewModel>), StatusCodes.Status200OK, applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -45,8 +45,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/projects/1 GET
-        [HttpGet("{id}")]
-        [Authorize(Roles = "client, freelancer")]
+        [HttpGet("{id:int}")]
+        [Authorize(Roles = "Client, Freelancer")]
         [ProducesResponseType(typeof(ProjectDetailsViewModel), StatusCodes.Status200OK, applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -64,7 +64,7 @@ namespace DevFreela.API.Controllers
 
         // api/projects POST
         [HttpPost]
-        [Authorize(Roles = "client")]
+        [Authorize(Roles = "Client")]
         [Consumes(applicationJsonMediaType)]
         [ProducesResponseType(typeof(CreateProjectCommand), StatusCodes.Status201Created, applicationJsonMediaType)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, applicationJsonMediaType)]
@@ -79,8 +79,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/projects/1 PUT
-        [HttpPut("{id}")]
-        [Authorize(Roles = "client")]
+        [HttpPut("{id:int}")]
+        [Authorize(Roles = "Client")]
         [Consumes(applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -100,8 +100,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/projects/1 DELETE
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "client")]
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Client")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -118,8 +118,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/projects/1/comments POST
-        [HttpPost("{id}/comments")]
-        [Authorize(Roles = "client, freelancer")]
+        [HttpPost("{id:int}/comments")]
+        [Authorize(Roles = "Client, Freelancer")]
         [Consumes(applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -139,8 +139,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/projects/1/start PUT
-        [HttpPut("{id}/start")]
-        [Authorize(Roles = "client")]
+        [HttpPut("{id:int}/start")]
+        [Authorize(Roles = "Client")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -157,8 +157,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/projects/1/finish PUT
-        [HttpPut("{id}/finish")]
-        [Authorize(Roles = "client")]
+        [HttpPut("{id:int}/finish")]
+        [Authorize(Roles = "Client")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

@@ -23,7 +23,7 @@ namespace DevFreela.Application.Queries.GetUserById
                 }
             }
 
-            return new UserDetailViewModel(user.FullName, user.Email, user.BirthDate, user.Active, skillViewModel);
+            return new UserDetailViewModel(user.FullName, user.Email, user.BirthDate, user.Role, user.Active, skillViewModel);
         }
     }
 }

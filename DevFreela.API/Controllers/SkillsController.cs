@@ -29,7 +29,7 @@ namespace DevFreela.API.Controllers
 
         // api/skills GET
         [HttpGet]
-        [Authorize(Roles = "client, freelancer")]
+        [Authorize(Roles = "Client, Freelancer")]
         [ProducesResponseType(typeof(IEnumerable<SkillViewModel>), StatusCodes.Status200OK, applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -41,8 +41,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/skills GET
-        [HttpGet("{id}")]
-        [Authorize(Roles = "client, freelancer")]
+        [HttpGet("{id:int}")]
+        [Authorize(Roles = "Client, Freelancer")]
         [ProducesResponseType(typeof(SkillViewModel), StatusCodes.Status200OK, applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -59,7 +59,7 @@ namespace DevFreela.API.Controllers
 
         // api/skills POST
         [HttpPost]
-        [Authorize(Roles = "client, freelancer")]
+        [Authorize(Roles = "Client, Freelancer")]
         [Consumes(applicationJsonMediaType)]
         [ProducesResponseType(typeof(CreateSkillCommand), StatusCodes.Status201Created, applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -77,8 +77,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/skills PUT
-        [HttpPut("{id}")]
-        [Authorize(Roles = "client, freelancer")]
+        [HttpPut("{id:int}")]
+        [Authorize(Roles = "Client, Freelancer")]
         [Consumes(applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, applicationJsonMediaType)]
@@ -98,8 +98,8 @@ namespace DevFreela.API.Controllers
         }
 
         // api/skills DELETE
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "client, freelancer")]
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Client, Freelancer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
