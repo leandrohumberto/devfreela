@@ -22,6 +22,7 @@ namespace DevFreela.Application.Queries.GetProjectById
                     project.Id,
                     project.Title,
                     project.Description,
+                    project.Status,
                     project.StartedAt,
                     project.FinishedAt,
                     project.Client?.FullName,

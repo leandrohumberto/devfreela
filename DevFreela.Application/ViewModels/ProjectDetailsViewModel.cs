@@ -1,9 +1,11 @@
-﻿namespace DevFreela.Application.ViewModels
+﻿using DevFreela.Core.Enums;
+
+namespace DevFreela.Application.ViewModels
 {
     public class ProjectDetailsViewModel
     {
-        public ProjectDetailsViewModel(int id, string title, string description, DateTime? startedAt,
-            DateTime? finishedAt, string clientFullName, string freelancerFullName, decimal totalCost, 
+        public ProjectDetailsViewModel(int id, string title, string description, ProjectStatusEnum status, DateTime? startedAt,
+            DateTime? finishedAt, string clientFullName, string freelancerFullName, decimal totalCost,
             IEnumerable<CommentViewModel> comments)
         {
             Id = id;
@@ -17,6 +19,7 @@
 
             Comments = Enumerable.Empty<CommentViewModel>();
             foreach (var comment in comments) Comments = Comments.Append(comment);
+            Status = status;
         }
 
         public int Id { get; private set; }
@@ -24,6 +27,8 @@
         public string Title { get; private set; }
 
         public string Description { get; private set; }
+
+        public ProjectStatusEnum Status { get; private set; }
 
         public DateTime? StartedAt { get; private set; }
 

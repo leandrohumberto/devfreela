@@ -17,11 +17,18 @@ using System.Text;
 using DevFreela.Infrastructure.Logging;
 using DevFreela.API.Extensions;
 using DevFreela.Infrastructure.Persistence;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers(options => options.Filters.Add(typeof(ValidationFilter)));
+builder.Services.AddControllers(options => options.Filters.Add(typeof(ValidationFilter)))
+    .AddJsonOptions(x =>
+    {
+        // Serialize enums as strings in API responses
+        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
