@@ -4,13 +4,13 @@ using MediatR;
 
 namespace DevFreela.Application.Queries.GetUserById
 {
-    public class GetUserByIdRequestHandler : IRequestHandler<GetUserByIdRequest, UserDetailViewModel>
+    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDetailViewModel>
     {
         private readonly IUserRepository _repository;
 
-        public GetUserByIdRequestHandler(IUserRepository repository) => _repository = repository;
+        public GetUserByIdQueryHandler(IUserRepository repository) => _repository = repository;
 
-        public async Task<UserDetailViewModel> Handle(GetUserByIdRequest request, CancellationToken cancellationToken)
+        public async Task<UserDetailViewModel> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             var user = await _repository.GetByIdAsync(request.Id, cancellationToken);
 

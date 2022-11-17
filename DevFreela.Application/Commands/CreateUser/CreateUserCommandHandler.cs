@@ -35,18 +35,18 @@ namespace DevFreela.Application.Commands.CreateUser
 
             if (command.Skills != null)
             {
-                foreach (var idSkill in command.Skills)
+                var idSkills = command.Skills.Where(id => _skillRepository.ExistsAsync(id, cancellationToken).Result).ToList();
+
+                if (idSkills.Count > 0)
                 {
-                    if (await _skillRepository.ExistsAsync(idSkill, cancellationToken))
+                    foreach (var idSkill in idSkills)
                     {
-                        var skill = await _skillRepository.GetByIdAsync(idSkill, cancellationToken);
-                        var userSkill = new UserSkill(user.Id, skill.Id);
-                        user.UserSkills.Add(userSkill);
+                        user.UserSkills.Add(new UserSkill(user.Id, idSkill));
                     }
+
+                    await _userRepository.SaveChangesAsync(cancellationToken);
                 }
             }
-
-            await _userRepository.SaveChangesAsync(cancellationToken);
 
             return user.Id;
         }

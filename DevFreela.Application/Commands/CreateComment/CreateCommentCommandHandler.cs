@@ -9,9 +9,9 @@ namespace DevFreela.Application.Commands.CreateComment
         private readonly IProjectRepository _projectRepository;
         private readonly IUserRepository _userRepository;
 
-        public CreateCommentCommandHandler(IProjectRepository repository, IUserRepository userRepository)
+        public CreateCommentCommandHandler(IProjectRepository projectRepository, IUserRepository userRepository)
         {
-            _projectRepository = repository;
+            _projectRepository = projectRepository;
             _userRepository = userRepository;
         }
 

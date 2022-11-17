@@ -37,7 +37,7 @@ namespace DevFreela.API.Controllers
             var userExists = await _mediator.Send(new UserExistsQuery(id));
             if (!userExists) return NotFound();
 
-            var user = await _mediator.Send(new GetUserByIdRequest(id));
+            var user = await _mediator.Send(new GetUserByIdQuery(id));
 
             return Ok(user);
         }

@@ -26,7 +26,6 @@ namespace DevFreela.Core.Entities
             CreatedAt = DateTime.Now;
             Status = ProjectStatusEnum.Created;
             Comments = new List<ProjectComment>();
-
         }
 
         public string Title { get; private set; }
@@ -81,6 +80,16 @@ namespace DevFreela.Core.Entities
 
         public void Update(string title, string description, decimal totalCost)
         {
+            if (string.IsNullOrEmpty(title))
+            {
+                throw new ArgumentException($"'{nameof(title)}' cannot be null or empty.", nameof(title));
+            }
+
+            if (string.IsNullOrEmpty(description))
+            {
+                throw new ArgumentException($"'{nameof(description)}' cannot be null or empty.", nameof(description));
+            }
+
             Title = title;
             Description = description;
             TotalCost = totalCost;
