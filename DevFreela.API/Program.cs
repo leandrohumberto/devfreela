@@ -84,7 +84,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var connectionString = builder.Configuration.GetConnectionString("DevFreelaCs");
-builder.Services.AddDbContext<DevFreelaDbContext>(p => p.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<DevFreelaDbContext>(p => p.UseSqlServer(connectionString));
+builder.Services.AddDbContext<DevFreelaDbContext>(p => p.UseInMemoryDatabase("DevFreela"));
 //builder.Services.AddScoped<IProjectService, ProjectService>();
 //builder.Services.AddScoped<IUserService, UserService>();
 //builder.Services.AddScoped<ISkillService, SkillService>();
