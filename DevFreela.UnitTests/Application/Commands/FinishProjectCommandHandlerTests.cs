@@ -1,6 +1,8 @@
 ﻿using DevFreela.Application.Commands.FinishProject;
+using DevFreela.Core.DTOs;
 using DevFreela.Core.Entities;
 using DevFreela.Core.Repositories;
+using DevFreela.Core.Services;
 using Moq;
 
 namespace DevFreela.UnitTests.Application.Commands
@@ -14,12 +16,23 @@ namespace DevFreela.UnitTests.Application.Commands
             // Arrange
             var project = new Project("Title", "Description",
                 It.IsAny<int>(), It.IsAny<int>(), It.IsAny<decimal>());
-            var mock = new Mock<IProjectRepository>();
-            mock.Setup(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result)
+
+            var projectRepositoryMock = new Mock<IProjectRepository>();
+            projectRepositoryMock.Setup(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result)
                 .Returns(project);
-            mock.Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
-            var command = new FinishProjectCommand(It.IsAny<int>());
-            var handler = new FinishProjectCommandHandler(mock.Object);
+            projectRepositoryMock.Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
+
+            var paymentServiceMock = new Mock<IPaymentService>();
+            paymentServiceMock.Setup(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()).Result)
+                .Returns(true);
+
+            var command = new FinishProjectCommand(
+                It.IsAny<int>(),
+                "9999999999999999",
+                "999",
+                "9999",
+                "FULL NAME");
+            var handler = new FinishProjectCommandHandler(projectRepositoryMock.Object, paymentServiceMock.Object);
 
             //
             // Act
@@ -29,10 +42,13 @@ namespace DevFreela.UnitTests.Application.Commands
             //
             // Assert
 
-            mock.Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Once);
-            mock.Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
+            projectRepositoryMock.Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Once);
+            projectRepositoryMock.Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
                 Times.Once);
-            mock.VerifyNoOtherCalls();
+            paymentServiceMock.Verify(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()).Result,
+                Times.Once);
+            projectRepositoryMock.VerifyNoOtherCalls();
+            paymentServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -40,12 +56,21 @@ namespace DevFreela.UnitTests.Application.Commands
         {
             //
             // Arrange
-            var mock = new Mock<IProjectRepository>();
-            mock.Setup(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result)
+            var projectRepositoryMock = new Mock<IProjectRepository>();
+            projectRepositoryMock.Setup(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result)
                 .Throws(new Exception());
-            mock.Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
-            var command = new FinishProjectCommand(It.IsAny<int>());
-            var handler = new FinishProjectCommandHandler(mock.Object);
+            projectRepositoryMock.Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
+
+            var paymentServiceMock = new Mock<IPaymentService>();
+            paymentServiceMock.Setup(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()).Result);
+
+            var command = new FinishProjectCommand(
+                It.IsAny<int>(),
+                "9999999999999999",
+                "999",
+                "9999",
+                "FULL NAME");
+            var handler = new FinishProjectCommandHandler(projectRepositoryMock.Object, paymentServiceMock.Object);
 
             //
             // Act
@@ -53,10 +78,13 @@ namespace DevFreela.UnitTests.Application.Commands
             //
             // Assert
             Assert.ThrowsAny<Exception>(() => handler.Handle(command, CancellationToken.None).Result);
-            mock.Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
+            projectRepositoryMock.Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
                 Times.Once);
-            mock.Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Never);
-            mock.VerifyNoOtherCalls();
+            projectRepositoryMock.Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Never);
+            paymentServiceMock.Verify(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()).Result,
+                Times.Never);
+            projectRepositoryMock.VerifyNoOtherCalls();
+            paymentServiceMock.VerifyNoOtherCalls();
         }
     }
 }

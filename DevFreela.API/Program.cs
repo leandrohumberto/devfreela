@@ -18,6 +18,7 @@ using DevFreela.Infrastructure.Logging;
 using DevFreela.API.Extensions;
 using DevFreela.Infrastructure.Persistence;
 using System.Text.Json.Serialization;
+using DevFreela.Infrastructure.Payments;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +94,7 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddSingleton<ILoggerService, LoggerService>();
 builder.Services.AddMediatR(typeof(CreateProjectCommand));
 

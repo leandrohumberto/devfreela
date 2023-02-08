@@ -159,17 +159,23 @@ namespace DevFreela.API.Controllers
         // api/projects/1/finish PUT
         [HttpPut("{id:int}/finish")]
         [Authorize(Roles = "Client")]
+        [Consumes(applicationJsonMediaType)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Finish(int id)
+        public async Task<IActionResult> Finish(int id, [FromBody] FinishProjectCommand command)
         {
-            var projectExists = await _mediator.Send(new ProjectExistsQuery(id));
-            if (!projectExists) return NotFound();
+            command.Id = id;
 
-            // _projectService.Finish(id);
-            _ = await _mediator.Send(new FinishProjectCommand(id));
+            var result = await _mediator.Send(command);
+
+            if (!result)
+            {
+                return BadRequest("O pagamento não pôde ser processado.");
+            }
 
             return NoContent();
         }
