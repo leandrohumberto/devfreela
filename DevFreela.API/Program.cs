@@ -97,6 +97,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddSingleton<ILoggerService, LoggerService>();
 builder.Services.AddMediatR(typeof(CreateProjectCommand));
+builder.Services.AddHttpClient();
 
 // Configure Logger Service
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
