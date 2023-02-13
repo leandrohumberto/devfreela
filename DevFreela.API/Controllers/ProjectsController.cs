@@ -160,7 +160,7 @@ namespace DevFreela.API.Controllers
         [HttpPut("{id:int}/finish")]
         [Authorize(Roles = "Client")]
         [Consumes(applicationJsonMediaType)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -177,7 +177,7 @@ namespace DevFreela.API.Controllers
                 return BadRequest("O pagamento não pôde ser processado.");
             }
 
-            return NoContent();
+            return Accepted();
         }
     }
 }

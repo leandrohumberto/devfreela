@@ -23,8 +23,7 @@ namespace DevFreela.UnitTests.Application.Commands
             projectRepositoryMock.Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
 
             var paymentServiceMock = new Mock<IPaymentService>();
-            paymentServiceMock.Setup(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()).Result)
-                .Returns(true);
+            paymentServiceMock.Setup(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()));
 
             var command = new FinishProjectCommand(
                 It.IsAny<int>(),
@@ -45,7 +44,7 @@ namespace DevFreela.UnitTests.Application.Commands
             projectRepositoryMock.Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Once);
             projectRepositoryMock.Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
                 Times.Once);
-            paymentServiceMock.Verify(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()).Result,
+            paymentServiceMock.Verify(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()),
                 Times.Once);
             projectRepositoryMock.VerifyNoOtherCalls();
             paymentServiceMock.VerifyNoOtherCalls();
@@ -62,7 +61,7 @@ namespace DevFreela.UnitTests.Application.Commands
             projectRepositoryMock.Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
 
             var paymentServiceMock = new Mock<IPaymentService>();
-            paymentServiceMock.Setup(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()).Result);
+            paymentServiceMock.Setup(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()));
 
             var command = new FinishProjectCommand(
                 It.IsAny<int>(),
@@ -81,7 +80,7 @@ namespace DevFreela.UnitTests.Application.Commands
             projectRepositoryMock.Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
                 Times.Once);
             projectRepositoryMock.Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Never);
-            paymentServiceMock.Verify(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()).Result,
+            paymentServiceMock.Verify(mock => mock.ProcessPayment(It.IsAny<PaymentInfoDTO>()),
                 Times.Never);
             projectRepositoryMock.VerifyNoOtherCalls();
             paymentServiceMock.VerifyNoOtherCalls();

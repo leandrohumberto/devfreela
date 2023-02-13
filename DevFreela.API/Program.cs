@@ -19,6 +19,8 @@ using DevFreela.API.Extensions;
 using DevFreela.Infrastructure.Persistence;
 using System.Text.Json.Serialization;
 using DevFreela.Infrastructure.Payments;
+using DevFreela.Infrastructure.MessageBus;
+using DevFreela.Application.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,8 +98,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddSingleton<ILoggerService, LoggerService>();
+builder.Services.AddSingleton<IMessageBusService, MessageBusService>();
 builder.Services.AddMediatR(typeof(CreateProjectCommand));
 builder.Services.AddHttpClient();
+builder.Services.AddHostedService<PaymentApprovedConsumer>();
 
 // Configure Logger Service
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));

@@ -8,6 +8,24 @@ namespace DevFreela.Infrastructure.Payments
 {
     public class PaymentService : IPaymentService
     {
+        private readonly IMessageBusService _messageBusService;
+        private const string QUEUE_NAME = "Payments";
+
+        public PaymentService(IMessageBusService messageBusService)
+        {
+            _messageBusService = messageBusService;
+        }
+
+        public void ProcessPayment(PaymentInfoDTO dto)
+        {
+            var paymentInfoJson = JsonSerializer.Serialize(dto);
+            var paymentInfoBytes = Encoding.UTF8.GetBytes(paymentInfoJson);
+            _messageBusService.Publish(QUEUE_NAME, paymentInfoBytes);
+        }
+
+        //
+        // Implementação do serviço utilizando chamada síncrona ao microsserviço
+        /*
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _paymentsBaseUrl;
 
@@ -31,5 +49,6 @@ namespace DevFreela.Infrastructure.Payments
 
             return response.IsSuccessStatusCode;
         }
+        */
     }
 }

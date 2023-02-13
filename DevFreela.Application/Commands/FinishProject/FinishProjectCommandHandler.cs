@@ -23,6 +23,30 @@ namespace DevFreela.Application.Commands.FinishProject
 
             if (project != null)
             {
+                var paymentInfoDto = new PaymentInfoDTO(request.Id, request.CreditCardNumber, request.Cvv,
+                    request.ExpiresAt, request.FullName, project?.TotalCost ?? 0.0M);
+                
+                _paymentService.ProcessPayment(paymentInfoDto);
+
+                project?.SetPaymentPending();
+                 
+                await _repository.SaveChangesAsync(cancellationToken);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /*
+         * Implementação do método Handle com chamada síncrona ao microsserviço
+         * 
+        public async Task<bool> Handle(FinishProjectCommand request, CancellationToken cancellationToken)
+        {
+            var project = await _repository.GetByIdAsync(request.Id, cancellationToken);
+
+            if (project != null)
+            {
                 project?.Finish();
 
                 var paymentInfoDto = new PaymentInfoDTO(request.Id, request.CreditCardNumber, request.Cvv,
@@ -40,6 +64,7 @@ namespace DevFreela.Application.Commands.FinishProject
             }
 
             return false;
-        }
+        } 
+        */
     }
 }
