@@ -99,7 +99,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddSingleton<ILoggerService, LoggerService>();
 builder.Services.AddSingleton<IMessageBusService, MessageBusService>();
-builder.Services.AddMediatR(typeof(CreateProjectCommand));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProjectCommand).Assembly));
 builder.Services.AddHttpClient();
 builder.Services.AddHostedService<PaymentApprovedConsumer>();
 
