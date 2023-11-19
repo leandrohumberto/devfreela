@@ -27,6 +27,14 @@ namespace DevFreela.Application.Validators
 
             RuleFor(p => p.TotalCost)
                 .GreaterThan(0M);
+
+            RuleFor(p => p.IdClient)
+                .NotEmpty()
+                .NotNull();
+
+            RuleFor(p => p.IdFreelancer)
+                .NotEmpty()
+                .NotNull();
         }
     }
 }

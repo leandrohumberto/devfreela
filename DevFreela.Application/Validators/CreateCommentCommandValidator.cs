@@ -10,6 +10,10 @@ namespace DevFreela.Application.Validators
             RuleFor(c => c.Content)
                 .NotNull()
                 .NotEmpty();
+
+            RuleFor(c => c.IdUser)
+                .NotNull()
+                .NotEmpty();
         }
     }
 }

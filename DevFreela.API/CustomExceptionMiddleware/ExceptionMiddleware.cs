@@ -27,6 +27,16 @@ namespace DevFreela.API.CustomExceptionMiddleware
                 _logger.LogError($"Login failed for credentials {ex.Email} - {ex.Password}: {ex}");
                 await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
             }
+            catch (InvalidProjectException ex)
+            {
+                _logger.LogError($"Invalid project - {ex.IdProject}: {ex}");
+                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (InvalidUserException ex)
+            {
+                _logger.LogError($"Invalid user - {ex.IdUser}: {ex}");
+                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
+            }
             catch (InvalidUserEmailException ex)
             {
                 _logger.LogError($"Invalid user email - {ex.Email}: {ex}");

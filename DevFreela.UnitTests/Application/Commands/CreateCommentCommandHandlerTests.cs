@@ -1,5 +1,6 @@
 ﻿using DevFreela.Application.Commands.CreateComment;
 using DevFreela.Core.Entities;
+using DevFreela.Core.Exceptions;
 using DevFreela.Core.Repositories;
 using Moq;
 
@@ -12,7 +13,6 @@ namespace DevFreela.UnitTests.Application.Commands
         {
             //
             // Arrange
-
             var project = new Project("Project", "Description",
                 It.IsAny<int>(), It.IsAny<int>(), It.IsAny<decimal>());
 
@@ -20,16 +20,108 @@ namespace DevFreela.UnitTests.Application.Commands
             var userRepositoryMock = new Mock<IUserRepository>();
 
             projectRepositoryMock
-                .Setup(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Setup(pr => pr.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
                 .Returns(true);
             projectRepositoryMock
-                .Setup(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Setup(pr => pr.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result)
                 .Returns(project);
             projectRepositoryMock
-                .Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
+                .Setup(pr => pr.SaveChangesAsync(CancellationToken.None));
 
             userRepositoryMock
-                .Setup(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Setup(ur => ur.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Returns(true);
+
+            var command = new CreateCommentCommand(It.IsAny<string>(), It.IsAny<int>());
+            command.SetIdProject(It.IsAny<int>());
+
+            var handler = new CreateCommentCommandHandler(projectRepositoryMock.Object,
+                userRepositoryMock.Object);
+
+            //
+            // Act
+            _ = await handler.Handle(command, CancellationToken.None);
+
+            //
+            // Assert
+            Assert.True(project.Comments.Count >= 1);
+            projectRepositoryMock
+                .Verify(pr => pr.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result,
+                Times.Once);
+            projectRepositoryMock
+                .Verify(pr => pr.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
+                Times.Once);
+            projectRepositoryMock
+                .Verify(pr => pr.SaveChangesAsync(CancellationToken.None), Times.Once);
+            userRepositoryMock
+                .Verify(ur => ur.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.Once);
+            projectRepositoryMock.VerifyNoOtherCalls();
+            userRepositoryMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void UserDoesNotExist_Executed_ThrowException()
+        {
+            //
+            // Arrange
+            var projectRepositoryMock = new Mock<IProjectRepository>();
+            var userRepositoryMock = new Mock<IUserRepository>();
+
+            projectRepositoryMock
+                .Setup(pr => pr.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Returns(true);
+            projectRepositoryMock
+                .Setup(pr => pr.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result);
+            projectRepositoryMock
+                .Setup(pr => pr.SaveChangesAsync(CancellationToken.None));
+
+            userRepositoryMock
+                .Setup(ur => ur.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Returns(false);
+
+            var command = new CreateCommentCommand(It.IsAny<string>(), It.IsAny<int>());
+            command.SetIdProject(It.IsAny<int>());
+
+            var handler = new CreateCommentCommandHandler(projectRepositoryMock.Object,
+                userRepositoryMock.Object);
+
+            //
+            // Act
+
+            //
+            // Assert
+            await Assert.ThrowsAnyAsync<InvalidUserException>(() => handler.Handle(command, CancellationToken.None));
+            projectRepositoryMock
+                .Verify(pr => pr.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.AtMost(1));
+            projectRepositoryMock
+                .Verify(pr => pr.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
+                Times.Never);
+            projectRepositoryMock
+                .Verify(pr => pr.SaveChangesAsync(CancellationToken.None), Times.Never);
+            userRepositoryMock
+                .Verify(ur => ur.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.Once);
+            projectRepositoryMock.VerifyNoOtherCalls();
+            userRepositoryMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ProjectDoesNotExist_Executed_ThrowException()
+        {
+            //
+            // Arrange
+            var projectRepositoryMock = new Mock<IProjectRepository>();
+            var userRepositoryMock = new Mock<IUserRepository>();
+
+            projectRepositoryMock
+                .Setup(pr => pr.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Returns(false);
+            projectRepositoryMock
+                .Setup(pr => pr.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result);
+            projectRepositoryMock
+                .Setup(pr => pr.SaveChangesAsync(CancellationToken.None));
+
+            userRepositoryMock
+                .Setup(ur => ur.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
                 .Returns(true);
 
             var command = new CreateCommentCommand(It.IsAny<string>(), It.IsAny<int>());
@@ -41,118 +133,18 @@ namespace DevFreela.UnitTests.Application.Commands
             //
             // Act
 
-            _ = await handler.Handle(command, CancellationToken.None);
-
             //
             // Assert
-
-            Assert.True(project.Comments.Count >= 1);
+            await Assert.ThrowsAnyAsync<InvalidProjectException>(() => handler.Handle(command, CancellationToken.None));
             projectRepositoryMock
-                .Verify(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result,
-                Times.Once);
+                .Verify(pr => pr.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.Once);
             projectRepositoryMock
-                .Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
-                Times.Once);
-            projectRepositoryMock
-                .Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Once);
-            userRepositoryMock
-                .Verify(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.Once);
-            projectRepositoryMock.VerifyNoOtherCalls();
-            userRepositoryMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async void UserDoesNotExist_Executed_DoNotAddComment()
-        {
-            //
-            // Arrange
-
-            var projectRepositoryMock = new Mock<IProjectRepository>();
-            var userRepositoryMock = new Mock<IUserRepository>();
-
-            projectRepositoryMock
-                .Setup(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
-                .Returns(It.IsAny<bool>());
-            projectRepositoryMock
-                .Setup(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result);
-            projectRepositoryMock
-                .Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
-
-            userRepositoryMock
-                .Setup(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
-                .Returns(false);
-
-            var command = new CreateCommentCommand(It.IsAny<string>(), It.IsAny<int>());
-            command.SetIdProject(It.IsAny<int>());
-
-            var handler = new CreateCommentCommandHandler(projectRepositoryMock.Object,
-                userRepositoryMock.Object);
-
-            //
-            // Act
-
-            _ = await handler.Handle(command, CancellationToken.None);
-
-            //
-            // Assert
-
-            projectRepositoryMock
-                .Verify(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result);
-            projectRepositoryMock
-                .Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
+                .Verify(pr => pr.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
                 Times.Never);
             projectRepositoryMock
-                .Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Never);
+                .Verify(pr => pr.SaveChangesAsync(CancellationToken.None), Times.Never);
             userRepositoryMock
-                .Verify(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.Once);
-            projectRepositoryMock.VerifyNoOtherCalls();
-            userRepositoryMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async void ProjectDoesNotExist_Executed_DoNotAddComment()
-        {
-            //
-            // Arrange
-
-            var projectRepositoryMock = new Mock<IProjectRepository>();
-            var userRepositoryMock = new Mock<IUserRepository>();
-
-            projectRepositoryMock
-                .Setup(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
-                .Returns(false);
-            projectRepositoryMock
-                .Setup(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result);
-            projectRepositoryMock
-                .Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
-
-            userRepositoryMock
-                .Setup(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
-                .Returns(It.IsAny<bool>());
-
-            var command = new CreateCommentCommand(It.IsAny<string>(), It.IsAny<int>());
-            command.SetIdProject(It.IsAny<int>());
-
-            var handler = new CreateCommentCommandHandler(projectRepositoryMock.Object,
-                userRepositoryMock.Object);
-
-            //
-            // Act
-
-            _ = await handler.Handle(command, CancellationToken.None);
-
-            //
-            // Assert
-
-            projectRepositoryMock
-                .Verify(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.Once);
-            projectRepositoryMock
-                .Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
-                Times.Never);
-            projectRepositoryMock
-                .Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Never);
-            userRepositoryMock
-                .Verify(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result);
+                .Verify(ur => ur.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.AtMost(1));
             projectRepositoryMock.VerifyNoOtherCalls();
             userRepositoryMock.VerifyNoOtherCalls();
         }
@@ -162,20 +154,19 @@ namespace DevFreela.UnitTests.Application.Commands
         {
             //
             // Arrange
-
             var projectRepositoryMock = new Mock<IProjectRepository>();
             var userRepositoryMock = new Mock<IUserRepository>();
 
             projectRepositoryMock
-                .Setup(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Setup(pr => pr.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
                 .Returns(false);
             projectRepositoryMock
-                .Setup(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result);
+                .Setup(pr => pr.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result);
             projectRepositoryMock
-                .Setup(mock => mock.SaveChangesAsync(CancellationToken.None));
+                .Setup(pr => pr.SaveChangesAsync(CancellationToken.None));
 
             userRepositoryMock
-                .Setup(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
+                .Setup(ur => ur.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result)
                 .Returns(false);
 
             var command = new CreateCommentCommand(It.IsAny<string>(), It.IsAny<int>());
@@ -187,21 +178,19 @@ namespace DevFreela.UnitTests.Application.Commands
             //
             // Act
 
-            _ = await handler.Handle(command, CancellationToken.None);
-
             //
             // Assert
-
+            await Assert.ThrowsAnyAsync<Exception>(() => handler.Handle(command, CancellationToken.None));
             projectRepositoryMock
-                .Verify(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.Once);
+                .Verify(pr => pr.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result, Times.AtMost(1));
             projectRepositoryMock
-                .Verify(mock => mock.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
+                .Verify(pr => pr.GetByIdAsync(It.IsAny<int>(), CancellationToken.None).Result,
                 Times.Never);
             projectRepositoryMock
-                .Verify(mock => mock.SaveChangesAsync(CancellationToken.None), Times.Never);
+                .Verify(ur => ur.SaveChangesAsync(CancellationToken.None), Times.Never);
             userRepositoryMock
-                .Verify(mock => mock.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result,
-                Times.Once);
+                .Verify(ur => ur.ExistsAsync(It.IsAny<int>(), CancellationToken.None).Result,
+                Times.AtMost(1));
             projectRepositoryMock.VerifyNoOtherCalls();
             userRepositoryMock.VerifyNoOtherCalls();
         }

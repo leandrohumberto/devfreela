@@ -66,11 +66,15 @@ namespace DevFreela.Application.Consumers
             using var scope = _serviceProvider.CreateScope();
             var projectRepository = scope.ServiceProvider.GetRequiredService<IProjectRepository>();
 
-            if (projectRepository != null)
+            if (projectRepository != null && await projectRepository.ExistsAsync(idProject, CancellationToken.None))
             {
                 var project = await projectRepository.GetByIdAsync(idProject, cancellationToken);
                 project?.Finish();
                 await projectRepository.SaveChangesAsync(cancellationToken);
+            }
+            else
+            {
+                // TODO: Publicar mensagem em uma fila de erros
             }
         }
     }
